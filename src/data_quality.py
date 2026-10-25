@@ -30,14 +30,14 @@ def check_null_rate(df: pd.DataFrame, column: str, threshold_pct: float = 10.0) 
     n_total = len(df)
     n_null = df[column].isnull().sum()
     null_pct = (n_null / n_total * 100) if n_total > 0 else 0.0
-    passed = null_pct <= threshold_pct
+    passed = bool(null_pct <= threshold_pct)
 
     return {
         "check": "null_rate",
         "column": column,
         "null_count": int(n_null),
         "total_rows": n_total,
-        "null_pct": round(null_pct, 2),
+        "null_pct": round(float(null_pct), 2),
         "threshold_pct": threshold_pct,
         "passed": passed,
     }
@@ -57,14 +57,14 @@ def check_uniqueness(df: pd.DataFrame, columns: List[str]) -> dict:
     n_total = len(df)
     n_distinct = df.drop_duplicates(subset=columns).shape[0]
     n_duplicates = n_total - n_distinct
-    passed = n_duplicates == 0
+    passed = bool(n_duplicates == 0)
 
     return {
         "check": "uniqueness",
         "columns": columns,
         "total_rows": n_total,
         "distinct_rows": n_distinct,
-        "n_duplicates": n_duplicates,
+        "n_duplicates": int(n_duplicates),
         "passed": passed,
     }
 
@@ -90,14 +90,14 @@ def check_referential_integrity(
     """
     orphans = ~df_child[child_col].isin(df_parent[parent_col])
     n_orphans = orphans.sum()
-    passed = n_orphans == 0
+    passed = bool(n_orphans == 0)
 
     return {
         "check": "referential_integrity",
         "child_column": child_col,
         "parent_column": parent_col,
         "n_orphans": int(n_orphans),
-        "orphan_pct": round(n_orphans / len(df_child) * 100, 2) if len(df_child) > 0 else 0,
+        "orphan_pct": round(float(n_orphans) / len(df_child) * 100, 2) if len(df_child) > 0 else 0.0,
         "passed": passed,
     }
 
@@ -128,7 +128,7 @@ def check_value_range(
     if max_val is not None:
         violations += (series > max_val).sum()
 
-    passed = violations == 0
+    passed = bool(violations == 0)
 
     return {
         "check": "value_range",

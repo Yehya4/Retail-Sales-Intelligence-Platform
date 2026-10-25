@@ -9,6 +9,14 @@ Usage :
     python src/pipeline.py --steps etl    # Étapes spécifiques
 """
 
+import sys
+from pathlib import Path
+
+# Assure que la racine du projet est dans le sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 import uuid
 import argparse
 from datetime import datetime

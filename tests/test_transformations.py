@@ -166,6 +166,7 @@ class TestTransformProducts:
     def test_numeric_columns_coerced(self, sample_products):
         """Les colonnes numériques invalides doivent être converties en NaN."""
         df = sample_products.copy()
+        df["product_weight_g"] = df["product_weight_g"].astype(object)
         df.loc[0, "product_weight_g"] = "invalid"
         df_clean, _ = transform_products(df)
         assert pd.api.types.is_float_dtype(df_clean["product_weight_g"])
